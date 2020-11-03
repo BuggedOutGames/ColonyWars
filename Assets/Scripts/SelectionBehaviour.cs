@@ -1,59 +1,53 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class SelectionBehaviour : MonoBehaviour {
 
-    private static Color SELECTION_BOX_COLOR = new Color(0.8f, 0.8f, 0.95f, 0.25f);
-    private List<UnitBehaviour> selection = new List<UnitBehaviour>();
-    private bool isSelecting = false;
+    private readonly List<UnitBehaviour> visibleUnits = new List<UnitBehaviour>();
+    private readonly List<UnitBehaviour> selection = new List<UnitBehaviour>();
+    private bool isSelecting;
     private float mouseDownStart;
     private Vector2 mousePositionStart;
-
-    private PlayerController playerController;
-
+    
     void Start() {
-        playerController = GetComponent<PlayerController>();
+        EventManager.Instance.UnitEnteredVisionEvent += HandleUnitEnteredVisionEvent;
+        EventManager.Instance.UnitExitedVisionEvent += HandleUnitExitedVisionEvent;
     }
 
-    void OnGUI() {
-        if (isSelecting) {
-            Rect selectionBox = Utils.instance.GetScreenRect(mousePositionStart, Input.mousePosition);
-            Utils.instance.DrawRect(selectionBox, SELECTION_BOX_COLOR);
-            Utils.instance.DrawRectBorder(selectionBox,  SELECTION_BOX_COLOR, 2);
-
-            Rect selectionBoxWorld = Utils.instance.GetWorldRect(mousePositionStart, Input.mousePosition);
-            SelectUnitsInBounds(selectionBoxWorld);
-        }
-    }
+    private void HandleUnitEnteredVisionEvent(object sender, UnitBehaviour unit) => visibleUnits.Add(unit);
+    private void HandleUnitExitedVisionEvent(object sender, UnitBehaviour unit) => visibleUnits.Remove(unit);
 
     void Update() {
         if (Input.GetMouseButtonDown(0)) {
             mouseDownStart = Time.time;
             mousePositionStart = Input.mousePosition;
-            DeselectUnits();
+            DeSelectUnits();
             SelectUnitAtMousePosition();
-        } else if (Input.GetMouseButton(0) && (Time.time - mouseDownStart > 0.1)) {
-            isSelecting = true; 
+        } else if (Input.GetMouseButton(0) && (Time.time - mouseDownStart > 0.11)) {
+            Rect selectionBoxWorld = Utils.Instance.GetWorldRect(mousePositionStart, Input.mousePosition);
+            Rect selectionBoxScreen = Utils.Instance.GetScreenRect(mousePositionStart, Input.mousePosition);
+            SelectUnitsInBounds(selectionBoxWorld);
+            EventManager.Instance.OnStartMouseSelectionBoxEvent(selectionBoxScreen);
         } else if (Input.GetMouseButtonUp(0)) {
-            isSelecting = false;
+            EventManager.Instance.OnStopMouseSelectionBoxEvent();
+        } else if (Input.GetMouseButtonDown(1)) {
+            selection.ForEach(selectedUnit => EventManager.Instance.OnMoveCommand(selectedUnit, Utils.Instance.GetMousePositionInWorld()));
+
         }
     }
 
     private void SelectUnitsInBounds(Rect bounds) {
-        foreach (UnitBehaviour unit in playerController.GetVisibleUnits()) {
+        foreach (UnitBehaviour unit in visibleUnits) {
             if (bounds.Contains(unit.gameObject.transform.position)) {
-                unit.SetSelected(true);
-                selection.Add(unit);
+                SelectUnit(unit);
             } else {
-                unit.SetSelected(false);
-                selection.Remove(unit);
+                DeSelectUnit(unit);
             }
         }
     }
 
     private void SelectUnitAtMousePosition() {
-        RaycastHit2D hit = Utils.instance.CastRayAtMousePosition();
+        RaycastHit2D hit = Utils.Instance.CastRayAtMousePosition();
         if (hit.collider != null) {
             UnitBehaviour unit = hit.transform.gameObject.GetComponent<UnitBehaviour>();
             if (unit != null) {
@@ -63,13 +57,22 @@ public class SelectionBehaviour : MonoBehaviour {
     }
 
     private void SelectUnit(UnitBehaviour unit) {
-        unit.SetSelected(true);
-        selection.Add(unit);
+        if (!selection.Contains(unit)) {
+            selection.Add(unit);
+            EventManager.Instance.OnSelectUnit(unit);
+        }
     }
 
-    private void DeselectUnits() {
+    private void DeSelectUnit(UnitBehaviour unit) {
+        if (selection.Contains(unit)) {
+            selection.Remove(unit);
+            EventManager.Instance.OnDeSelectUnit(unit);
+        }
+    }
+    
+    private void DeSelectUnits() {
         foreach (UnitBehaviour unit in selection) {
-            unit.SetSelected(false);
+            EventManager.Instance.OnDeSelectUnit(unit);
         }
         selection.Clear();
     }

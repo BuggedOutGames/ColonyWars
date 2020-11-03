@@ -2,24 +2,23 @@ using UnityEngine;
 
 public class Utils : MonoBehaviour {
     
-    public static Utils instance;
+    public static Utils Instance;
     private Texture2D whiteTexture;
-
-
+    
     void Awake() {
-        if (instance == null) {
-            instance = InitInstance();
-        } else if (instance != this) {
-            Destroy(this.gameObject);
+        if (Instance == null) {
+            Instance = InitInstance();
+        } else if (Instance != this) {
+            Destroy(gameObject);
         }
 
-        DontDestroyOnLoad(this.gameObject);
+        DontDestroyOnLoad(gameObject);
     }
 
     private Utils InitInstance() {
-        this.whiteTexture = new Texture2D(1, 1);
-        this.whiteTexture.SetPixel(0, 0, Color.white);
-        this.whiteTexture.Apply();    
+        whiteTexture = new Texture2D(1, 1);
+        whiteTexture.SetPixel(0, 0, Color.white);
+        whiteTexture.Apply();    
         return this;
     }
 

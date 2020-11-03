@@ -1,10 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class SpawnBehaviour : MonoBehaviour {
 
-    public UnitBehaviour unit;
+    public GameObject unit;
 
     void Update() {
         if (Input.GetKeyDown(KeyCode.Space)) {
@@ -13,8 +11,7 @@ public class SpawnBehaviour : MonoBehaviour {
     }
 
     void SpawnUnit() {
-        Vector2 position = Utils.instance.GetMousePositionInWorld();
-        UnitBehaviour spawnedUnit = Instantiate(unit, new Vector3(position.x, position.y, -1), Quaternion.identity);
-        spawnedUnit.SetSelected(false);
+        Vector2 position = Utils.Instance.GetMousePositionInWorld();
+        Instantiate(unit, new Vector3(position.x, position.y, -1), Quaternion.identity);
     }
 }
