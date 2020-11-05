@@ -6,8 +6,6 @@ public class MovementBehaviour : MonoBehaviour {
 
     [Range(1, 10)]
     public float movementSpeed;
-    [Range(1, 10)]
-    public float rotationSpeed;
 
     private Rigidbody2D rigidBody;
     private Animator animator;
@@ -17,7 +15,7 @@ public class MovementBehaviour : MonoBehaviour {
     
     private void Start() {
         adjustedMoveSpeed = movementSpeed / 2;
-        adjustedRotationSpeed = rotationSpeed * 30;
+        adjustedRotationSpeed = adjustedMoveSpeed * 250;
         rigidBody = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         EventManager.Instance.MoveCommandEvent += HandleMoveCommandEvent;
