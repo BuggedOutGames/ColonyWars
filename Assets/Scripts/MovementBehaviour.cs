@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 public class MovementBehaviour : MonoBehaviour {
 
@@ -6,16 +8,43 @@ public class MovementBehaviour : MonoBehaviour {
 
     [Range(1, 10)]
     public float movementSpeed;
+    [Range(1, 10)]
+    public float separationFactor;
+    [Range(1, 10)]
+    public float alignmentFactor;
+    [Range(1, 10)]
+    public float cohesionFactor;
+    [Range(1, 10)]
+    public float destinationFactor;
+    [Range(0, 1)]
+    public float smoothFactor;
+    
 
     private Rigidbody2D rigidBody;
     private Animator animator;
     private Vector2? moveDestination;
+    
+    private Vector2 separationSmoothVector;
+    private Vector2 alignmentSmoothVector;
+    private Vector2 cohesionSmoothVector;
+    private Vector2 destinationSmoothVector;
+
     private float adjustedMoveSpeed;
     private float adjustedRotationSpeed;
+    private float adjustedSeparationFactor;
+    private float adjustedAlignmentFactor;
+    private float adjustedCohesionFactor;
+    private float adjustedDestinationFactor;
     
+    private readonly List<Transform> nearbyUnits = new List<Transform>();
+
     private void Start() {
-        adjustedMoveSpeed = movementSpeed / 2;
+        adjustedMoveSpeed = movementSpeed;
         adjustedRotationSpeed = adjustedMoveSpeed * 250;
+        adjustedSeparationFactor = separationFactor * 100;
+        adjustedAlignmentFactor = alignmentFactor * 100;
+        adjustedCohesionFactor = cohesionFactor * 100;
+        adjustedDestinationFactor = destinationFactor * 100;
         rigidBody = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         EventManager.Instance.MoveCommandEvent += HandleMoveCommandEvent;
@@ -25,9 +54,83 @@ public class MovementBehaviour : MonoBehaviour {
         EventManager.Instance.MoveCommandEvent -= HandleMoveCommandEvent;
     }
 
+    private void OnTriggerEnter2D(Collider2D other) {
+        if (other.gameObject.CompareTag("Ant")) {
+            nearbyUnits.Add(other.transform);
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D other) {
+        if (other.gameObject.CompareTag("Ant")) {
+            nearbyUnits.Remove(other.transform);
+        }
+    }
+
     private void FixedUpdate() {
         if (moveDestination.HasValue) {
-            MoveTowards(moveDestination.Value);
+            Vector2 direction = Cohesion() + Alignment() + Separation() + Destination();
+            RotateTowards(direction);
+            MoveForward();
+            if (Vector2.Distance(transform.position, moveDestination.Value) < 1) {
+                moveDestination = null;
+                StopWalkAnimation();
+            }
+        }
+    }
+    
+    private Vector2 Cohesion() {
+        Vector2 averageNeighborPosition = GetAverageNeighborPosition();
+        Vector2 cohesionSteer = averageNeighborPosition - (Vector2) transform.position;
+        Vector2 adjustedCohesionSteer = cohesionSteer.normalized * adjustedCohesionFactor;
+        return SmoothedSteer(adjustedCohesionSteer, ref cohesionSmoothVector);
+    }
+
+    private Vector2 Alignment() {
+        Vector2 alignmentSteer = GetAverageNeighborHeading();
+        Vector2 adjustedAlignmentSteer = alignmentSteer.normalized * adjustedAlignmentFactor;
+        return SmoothedSteer(adjustedAlignmentSteer, ref alignmentSmoothVector);
+    }
+
+    private Vector2 Separation() {
+        Vector2 averageNeighborPosition = GetAverageNeighborPosition();
+        Vector2 separationSteer = (Vector2) transform.position - averageNeighborPosition;
+        Vector2 adjustedSeparationSteer = separationSteer.normalized * adjustedSeparationFactor;
+        return SmoothedSteer(adjustedSeparationSteer, ref separationSmoothVector);
+    }
+
+    private Vector2 Destination() {
+        Vector2 destinationSteer = moveDestination.Value - (Vector2) transform.position;
+        Vector2 adjustedDestinationSteer = destinationSteer.normalized * adjustedDestinationFactor;
+        return SmoothedSteer(adjustedDestinationSteer, ref destinationSmoothVector);
+    }
+
+    private Vector2 SmoothedSteer(Vector2 steerVector, ref Vector2 velocityVector) {
+        return Vector2.SmoothDamp(
+            transform.up, steerVector, ref velocityVector, smoothFactor
+        );
+    }
+    
+    private Vector2 GetAverageNeighborPosition() {
+        if (nearbyUnits.Count == 0) {
+            return transform.position;
+        } else {
+            return nearbyUnits
+                .Select(unit => (Vector2) unit.position)
+                .Aggregate(Vector2.zero,
+                    (position, nextPosition) => position + nextPosition, 
+                    (position) => position / nearbyUnits.Count);
+        }
+    }
+
+    private Vector2 GetAverageNeighborHeading() {
+        if (nearbyUnits.Count == 0) {
+            return transform.up;
+        } else {
+            return nearbyUnits
+                .Select(unit => (Vector2) unit.transform.up)
+                .Aggregate(Vector2.zero,
+                    (heading, nextHeading) => heading + nextHeading,
+                    (heading) => heading / nearbyUnits.Count);
         }
     }
 
@@ -37,24 +140,16 @@ public class MovementBehaviour : MonoBehaviour {
             StartWalkAnimation();
         }
     }
-
-    private void MoveTowards(Vector2 target) {
-        RotateTowards(target);
-        MoveForward();
-        if (Vector2.Distance(transform.position, target) < 0.1) {
-            moveDestination = null;
-            StopWalkAnimation();
-        }
+    
+    private void MoveForward() {
+        rigidBody.MovePosition(transform.position + transform.up * (adjustedMoveSpeed * Time.deltaTime));
     }
 
     private void RotateTowards(Vector2 target) {
         Vector2 direction = (target - (Vector2) transform.position).normalized;
-        Quaternion newRotation = Quaternion.LookRotation(Vector3.forward, direction);
-        transform.rotation = Quaternion.RotateTowards(transform.rotation, newRotation, adjustedRotationSpeed * Time.deltaTime);
-    }
-
-    private void MoveForward() {
-        rigidBody.MovePosition(transform.position + transform.up * (adjustedMoveSpeed * Time.deltaTime));
+        Quaternion targetRotation = Quaternion.LookRotation(Vector3.forward, direction);
+        Quaternion newRotation = Quaternion.RotateTowards(transform.rotation, targetRotation, adjustedRotationSpeed * Time.deltaTime);
+        rigidBody.MoveRotation(newRotation);
     }
 
     private void StartWalkAnimation() => animator.SetBool(Walking, true);
