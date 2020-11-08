@@ -6,6 +6,9 @@ TagManager:
   tags:
   - SelectionIndicator
   - Ant
+  - FlockTrigger
+  - AvoidanceTrigger
+  - SeparationTrigger
   layers:
   - Default
   - TransparentFX

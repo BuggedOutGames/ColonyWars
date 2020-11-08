@@ -16,10 +16,7 @@ public class MovementBehaviour : MonoBehaviour {
     public float cohesionFactor;
     [Range(1, 10)]
     public float destinationFactor;
-    [Range(0, 1)]
-    public float smoothFactor;
     
-
     private Rigidbody2D rigidBody;
     private Animator animator;
     private Vector2? moveDestination;
@@ -29,22 +26,20 @@ public class MovementBehaviour : MonoBehaviour {
     private Vector2 cohesionSmoothVector;
     private Vector2 destinationSmoothVector;
 
-    private float adjustedMoveSpeed;
-    private float adjustedRotationSpeed;
+    private float rotationSpeed;
     private float adjustedSeparationFactor;
     private float adjustedAlignmentFactor;
     private float adjustedCohesionFactor;
     private float adjustedDestinationFactor;
-    
+
     private readonly List<Transform> nearbyUnits = new List<Transform>();
 
     private void Start() {
-        adjustedMoveSpeed = movementSpeed;
-        adjustedRotationSpeed = adjustedMoveSpeed * 250;
+        rotationSpeed = movementSpeed * 250;
         adjustedSeparationFactor = separationFactor * 100;
         adjustedAlignmentFactor = alignmentFactor * 100;
         adjustedCohesionFactor = cohesionFactor * 100;
-        adjustedDestinationFactor = destinationFactor * 100;
+        adjustedDestinationFactor = destinationFactor * 2;
         rigidBody = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         EventManager.Instance.MoveCommandEvent += HandleMoveCommandEvent;
@@ -55,17 +50,21 @@ public class MovementBehaviour : MonoBehaviour {
     }
 
     private void OnTriggerEnter2D(Collider2D other) {
-        if (other.gameObject.CompareTag("Ant")) {
-            nearbyUnits.Add(other.transform);
+        if (other.transform.parent != transform) {
+            if (other.gameObject.CompareTag("FlockTrigger")) {
+                nearbyUnits.Add(other.transform);
+            }
         }
     }
 
     private void OnTriggerExit2D(Collider2D other) {
-        if (other.gameObject.CompareTag("Ant")) {
-            nearbyUnits.Remove(other.transform);
+        if (other.transform.parent != transform) {
+            if (other.gameObject.CompareTag("FlockTrigger")) {
+                nearbyUnits.Remove(other.transform);
+            }
         }
     }
-
+    
     private void FixedUpdate() {
         if (moveDestination.HasValue) {
             Vector2 direction = Cohesion() + Alignment() + Separation() + Destination();
@@ -81,32 +80,32 @@ public class MovementBehaviour : MonoBehaviour {
     private Vector2 Cohesion() {
         Vector2 averageNeighborPosition = GetAverageNeighborPosition();
         Vector2 cohesionSteer = averageNeighborPosition - (Vector2) transform.position;
-        Vector2 adjustedCohesionSteer = cohesionSteer.normalized * adjustedCohesionFactor;
+        Vector2 adjustedCohesionSteer = cohesionSteer * adjustedCohesionFactor;
         return SmoothedSteer(adjustedCohesionSteer, ref cohesionSmoothVector);
     }
 
     private Vector2 Alignment() {
         Vector2 alignmentSteer = GetAverageNeighborHeading();
-        Vector2 adjustedAlignmentSteer = alignmentSteer.normalized * adjustedAlignmentFactor;
+        Vector2 adjustedAlignmentSteer = alignmentSteer * adjustedAlignmentFactor;
         return SmoothedSteer(adjustedAlignmentSteer, ref alignmentSmoothVector);
     }
 
     private Vector2 Separation() {
         Vector2 averageNeighborPosition = GetAverageNeighborPosition();
         Vector2 separationSteer = (Vector2) transform.position - averageNeighborPosition;
-        Vector2 adjustedSeparationSteer = separationSteer.normalized * adjustedSeparationFactor;
+        Vector2 adjustedSeparationSteer = separationSteer * adjustedSeparationFactor;
         return SmoothedSteer(adjustedSeparationSteer, ref separationSmoothVector);
     }
 
     private Vector2 Destination() {
         Vector2 destinationSteer = moveDestination.Value - (Vector2) transform.position;
-        Vector2 adjustedDestinationSteer = destinationSteer.normalized * adjustedDestinationFactor;
+        Vector2 adjustedDestinationSteer = destinationSteer * adjustedDestinationFactor;
         return SmoothedSteer(adjustedDestinationSteer, ref destinationSmoothVector);
     }
 
     private Vector2 SmoothedSteer(Vector2 steerVector, ref Vector2 velocityVector) {
         return Vector2.SmoothDamp(
-            transform.up, steerVector, ref velocityVector, smoothFactor
+            transform.up, steerVector, ref velocityVector, 0.1f
         );
     }
     
@@ -142,13 +141,13 @@ public class MovementBehaviour : MonoBehaviour {
     }
     
     private void MoveForward() {
-        rigidBody.MovePosition(transform.position + transform.up * (adjustedMoveSpeed * Time.deltaTime));
+        rigidBody.MovePosition(transform.position + transform.up * (movementSpeed * Time.fixedDeltaTime));
     }
 
     private void RotateTowards(Vector2 target) {
         Vector2 direction = (target - (Vector2) transform.position).normalized;
         Quaternion targetRotation = Quaternion.LookRotation(Vector3.forward, direction);
-        Quaternion newRotation = Quaternion.RotateTowards(transform.rotation, targetRotation, adjustedRotationSpeed * Time.deltaTime);
+        Quaternion newRotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
         rigidBody.MoveRotation(newRotation);
     }
 

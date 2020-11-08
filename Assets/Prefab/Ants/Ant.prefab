@@ -896,7 +896,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4997073625483006240}
-  m_LocalRotation: {x: 0, y: 0, z: -0.93765426, w: 0.34756953}
+  m_LocalRotation: {x: 0, y: 0, z: -0.9376547, w: 0.3475683}
   m_LocalPosition: {x: 0.04865221, y: -0.049730435, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -1109,9 +1109,9 @@ GameObject:
   - component: {fileID: 5443170105341578903}
   - component: {fileID: 8018962766660032451}
   - component: {fileID: 9149517675763378471}
-  m_Layer: 9
-  m_Name: Trigger
-  m_TagString: Ant
+  m_Layer: 2
+  m_Name: FlockTrigger
+  m_TagString: FlockTrigger
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1164,7 +1164,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0, y: 0.009857312}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -1175,7 +1175,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.5, y: 1.5}
+  m_Size: {x: 1, y: 1.2}
   m_EdgeRadius: 0
 --- !u!1 &7202365072155896637
 GameObject:
@@ -1294,7 +1294,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7581089344903310648}
-  m_LocalRotation: {x: -0, y: -0, z: -0.00000065565104, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: 0.0000006258487, w: 1}
   m_LocalPosition: {x: 0.0514, y: -0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -1500,11 +1500,11 @@ BoxCollider2D:
   m_GameObject: {fileID: 8118453937871352804}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 6200000, guid: cf9fa3f8ea0a9ba4aabc53caccff43f2, type: 2}
+  m_Material: {fileID: 6200000, guid: e52d411babc63a745a328cc24a1b5499, type: 2}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0.01396659}
+  m_Offset: {x: 0.011288956, y: 0.025090098}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -1515,7 +1515,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.5, y: 0.67793316}
+  m_Size: {x: 0.2774221, y: 0.47992778}
   m_EdgeRadius: 0
 --- !u!50 &7191893522766816592
 Rigidbody2D:
@@ -1529,14 +1529,14 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 1
   m_UseAutoMass: 0
-  m_Mass: 0.1
-  m_LinearDrag: 1000
-  m_AngularDrag: 1000
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0
   m_GravityScale: 0
-  m_Material: {fileID: 6200000, guid: cf9fa3f8ea0a9ba4aabc53caccff43f2, type: 2}
+  m_Material: {fileID: 6200000, guid: e52d411babc63a745a328cc24a1b5499, type: 2}
   m_Interpolate: 1
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 0
 --- !u!114 &50297547
 MonoBehaviour:
@@ -1562,12 +1562,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97a1de75e19134b4d8dd959fc06fdfea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movementSpeed: 10
-  separationFactor: 7
-  alignmentFactor: 6
-  cohesionFactor: 5
-  destinationFactor: 4
-  smoothFactor: 0.5
+  movementSpeed: 5
+  separationFactor: 8
+  alignmentFactor: 10
+  cohesionFactor: 6
+  destinationFactor: 10
 --- !u!114 &9114064275356655537
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1601,7 +1600,7 @@ MonoBehaviour:
   - {fileID: 6441805984559231873}
   m_Bounds:
     m_Center: {x: 0.0021968633, y: 0.002427131, z: 0}
-    m_Extent: {x: 0.1401734, y: 0.25358096, z: 0}
+    m_Extent: {x: 0.1401734, y: 0.25358093, z: 0}
   m_UseBatching: 1
   m_AlwaysUpdate: 1
 --- !u!114 &3209051609034099463
