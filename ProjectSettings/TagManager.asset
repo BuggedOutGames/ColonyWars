@@ -9,6 +9,7 @@ TagManager:
   - FlockTrigger
   - AvoidanceTrigger
   - SeparationTrigger
+  - ObstacleTrigger
   layers:
   - Default
   - TransparentFX
@@ -21,7 +22,7 @@ TagManager:
   - Ground
   - Ants
   - Rocks
-  - 
+  - Terrain
   - 
   - 
   - 
@@ -51,6 +52,9 @@ TagManager:
     locked: 0
   - name: Rocks
     uniqueID: 3785347761
+    locked: 0
+  - name: Terrain
+    uniqueID: 982203347
     locked: 0
   - name: Ants
     uniqueID: 334444243

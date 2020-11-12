@@ -16,6 +16,8 @@ public class MovementBehaviour : MonoBehaviour {
     public float cohesionFactor;
     [Range(1, 10)]
     public float destinationFactor;
+    [Range(1, 10)] 
+    public float obstacleAvoidanceFactor;
     
     private Rigidbody2D rigidBody;
     private Animator animator;
@@ -25,21 +27,25 @@ public class MovementBehaviour : MonoBehaviour {
     private Vector2 alignmentSmoothVector;
     private Vector2 cohesionSmoothVector;
     private Vector2 destinationSmoothVector;
+    private Vector2 obstacleAvoidanceSmoothVector;
 
     private float rotationSpeed;
     private float adjustedSeparationFactor;
     private float adjustedAlignmentFactor;
     private float adjustedCohesionFactor;
     private float adjustedDestinationFactor;
-
+    private float adjustedObstacleAvoidanceFactor;
+    
     private readonly List<Transform> nearbyUnits = new List<Transform>();
-
+    private readonly List<Transform> obstacles = new List<Transform>();
+    
     private void Start() {
         rotationSpeed = movementSpeed * 250;
         adjustedSeparationFactor = separationFactor * 100;
         adjustedAlignmentFactor = alignmentFactor * 100;
         adjustedCohesionFactor = cohesionFactor * 100;
         adjustedDestinationFactor = destinationFactor * 2;
+        adjustedObstacleAvoidanceFactor = obstacleAvoidanceFactor * 10;
         rigidBody = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         EventManager.Instance.MoveCommandEvent += HandleMoveCommandEvent;
@@ -53,6 +59,8 @@ public class MovementBehaviour : MonoBehaviour {
         if (other.transform.parent != transform) {
             if (other.gameObject.CompareTag("FlockTrigger")) {
                 nearbyUnits.Add(other.transform);
+            } else if (other.gameObject.CompareTag("ObstacleTrigger")) {
+                obstacles.Add(other.transform);
             }
         }
     }
@@ -61,20 +69,22 @@ public class MovementBehaviour : MonoBehaviour {
         if (other.transform.parent != transform) {
             if (other.gameObject.CompareTag("FlockTrigger")) {
                 nearbyUnits.Remove(other.transform);
+            } else if (other.gameObject.CompareTag("ObstacleTrigger")) {
+                obstacles.Remove(other.transform);
             }
         }
     }
     
     private void FixedUpdate() {
-        if (moveDestination.HasValue) {
-            Vector2 direction = Cohesion() + Alignment() + Separation() + Destination();
+        // if (moveDestination.HasValue) {
+            Vector2 direction = Cohesion() + Alignment() + Separation() + Destination() + ObstacleAvoidance();
             RotateTowards(direction);
             MoveForward();
-            if (Vector2.Distance(transform.position, moveDestination.Value) < 1) {
-                moveDestination = null;
-                StopWalkAnimation();
-            }
-        }
+            // if (Vector2.Distance(transform.position, moveDestination.Value) < 1) {
+            //     moveDestination = null;
+            //     StopWalkAnimation();
+            // }
+        // }
     }
     
     private Vector2 Cohesion() {
@@ -98,11 +108,22 @@ public class MovementBehaviour : MonoBehaviour {
     }
 
     private Vector2 Destination() {
-        Vector2 destinationSteer = moveDestination.Value - (Vector2) transform.position;
-        Vector2 adjustedDestinationSteer = destinationSteer * adjustedDestinationFactor;
-        return SmoothedSteer(adjustedDestinationSteer, ref destinationSmoothVector);
+        if (!moveDestination.HasValue) {
+            return transform.up;
+        } else {
+            Vector2 destinationSteer = moveDestination.Value - (Vector2) transform.position;
+            Vector2 adjustedDestinationSteer = destinationSteer * adjustedDestinationFactor;
+            return SmoothedSteer(adjustedDestinationSteer, ref destinationSmoothVector);
+        }
     }
 
+    private Vector2 ObstacleAvoidance() {
+        Vector2 averageObstaclePosition = GetAverageObstaclePosition();
+        Vector2 avoidanceSteer = (Vector2) transform.position - averageObstaclePosition;
+        Vector2 adjustedAvoidanceSteer = avoidanceSteer * adjustedObstacleAvoidanceFactor;
+        return SmoothedSteer(adjustedAvoidanceSteer, ref obstacleAvoidanceSmoothVector);
+    }
+    
     private Vector2 SmoothedSteer(Vector2 steerVector, ref Vector2 velocityVector) {
         return Vector2.SmoothDamp(
             transform.up, steerVector, ref velocityVector, 0.1f
@@ -113,14 +134,26 @@ public class MovementBehaviour : MonoBehaviour {
         if (nearbyUnits.Count == 0) {
             return transform.position;
         } else {
-            return nearbyUnits
-                .Select(unit => (Vector2) unit.position)
-                .Aggregate(Vector2.zero,
-                    (position, nextPosition) => position + nextPosition, 
-                    (position) => position / nearbyUnits.Count);
+            return GetAverageTransformPosition(nearbyUnits);
+        }
+    }
+    
+    private Vector2 GetAverageObstaclePosition() {
+        if (obstacles.Count == 0) {
+            return transform.position;
+        } else {
+            return GetAverageTransformPosition(obstacles);
         }
     }
 
+    private Vector2 GetAverageTransformPosition(List<Transform> transforms) {
+        return transforms
+            .Select(t => (Vector2) t.position)
+            .Aggregate(Vector2.zero,
+                (position, nextPosition) => position + nextPosition, 
+                (position) => position / transforms.Count);
+    }
+    
     private Vector2 GetAverageNeighborHeading() {
         if (nearbyUnits.Count == 0) {
             return transform.up;

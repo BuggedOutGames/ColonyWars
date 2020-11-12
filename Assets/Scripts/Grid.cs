@@ -3,8 +3,8 @@ using System.Linq;
 using UnityEngine;
 
 public class Grid: IEnumerable {
-    public readonly struct GridCell {
-        public readonly int Cost;
+    public class GridCell {
+        public int Cost;
         public readonly Vector2Int GridIndex;
         public readonly Vector2 WorldPosition;
         public GridCell(int cost, Vector2Int gridIndex, Vector2 worldPosition) {
@@ -16,18 +16,16 @@ public class Grid: IEnumerable {
     
     public readonly float CellSize;
     public readonly Vector2Int Dimensions;
-    private readonly GridCell[,] _grid;
+    private readonly GridCell[,] grid;
 
     public Grid(Vector2Int dimensions, float cellSize) {
         CellSize = cellSize;
         Dimensions = dimensions;
-        _grid = new GridCell[dimensions.x, dimensions.y];
-        int count = 0;
+        grid = new GridCell[dimensions.x, dimensions.y];
         foreach (var x in Enumerable.Range(0, dimensions.x)) {
             foreach (var y in Enumerable.Range(0, dimensions.y)) {
                 var cellIndex = new Vector2Int(x, y);
-                _grid[x, y] = new GridCell(count, cellIndex, GetWorldPosition(cellIndex));
-                count++;
+                grid[x, y] = new GridCell(int.MaxValue, cellIndex, GetWorldPosition(cellIndex));
             }
         }
     }
@@ -46,16 +44,16 @@ public class Grid: IEnumerable {
         );
     }
 
-    public GridCell? GetCellAtWorldPosition(Vector2 worldPosition) {
+    public GridCell GetCellAtWorldPosition(Vector2 worldPosition) {
         var cellIndex = GetCellIndex(worldPosition);
         if (cellIndex.x >= 0 && cellIndex.x < Dimensions.x && cellIndex.y >= 0 && cellIndex.y < Dimensions.y) {
-            return _grid[cellIndex.x, cellIndex.y];
+            return grid[cellIndex.x, cellIndex.y];
         } else {
             return null;
         }
     }
     
     public IEnumerator GetEnumerator() {
-        return _grid.Cast<GridCell>().GetEnumerator();
+        return grid.Cast<GridCell>().GetEnumerator();
     }
 }
