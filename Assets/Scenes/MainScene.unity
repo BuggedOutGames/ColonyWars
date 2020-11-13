@@ -179,12 +179,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 747067931}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d913978b1a0046379106c9806a71bbc7, type: 3}
+  m_Script: {fileID: 11500000, guid: 1252f6de4a2c485abfc7cf56b7aeaea1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  displayFlowField: 1
   CellSize: 2.5
   Dimensions: {x: 10, y: 10}
+  displayFlowField: 1
 --- !u!4 &747067934
 Transform:
   m_ObjectHideFlags: 0
