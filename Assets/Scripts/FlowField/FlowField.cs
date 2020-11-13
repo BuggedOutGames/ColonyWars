@@ -43,7 +43,7 @@ namespace FlowField {
 
         public void CalculateIntegrationCostField(Vector2 worldPosition) {
             var goalCell = GetGridCellAtWorldPosition(worldPosition);
-            if (goalCell.TerrainCost != 255) {
+            if (goalCell != null && goalCell.TerrainCost != 255) {
                 goalCell.IntegrationCost = 0;
                 foreach (Grid.GridCell cell in grid) {
                     if (cell != goalCell) {
