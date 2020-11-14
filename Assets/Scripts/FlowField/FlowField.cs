@@ -103,27 +103,16 @@ namespace FlowField {
         private void DisplayFlowField() {
             foreach (Grid.GridCell cell in grid) {
                 var cellRect = new Rect(
-                new Vector2(cell.WorldPosition.x - grid.CellSize / 2, cell.WorldPosition.y - grid.CellSize / 2), 
-                new Vector2(grid.CellSize, grid.CellSize)
+                    new Vector2(cell.WorldPosition.x - grid.CellSize / 2, cell.WorldPosition.y - grid.CellSize / 2), 
+                    new Vector2(grid.CellSize, grid.CellSize)
                 );
-                var terrainCostPosition = new Vector2(
-                cell.WorldPosition.x - grid.CellSize / 2 + 0.1f,
-                cell.WorldPosition.y + grid.CellSize / 2 - 0.1f
-                );
-                var integrationCostPosition = new Vector2(
-                    cell.WorldPosition.x - grid.CellSize / 2 + 0.1f,
-                    cell.WorldPosition.y + grid.CellSize / 2 - 0.4f
-                );
-
-                var textStyle = new GUIStyle {
-                    normal = {textColor = Color.white},
-                };
                 var green = new Color(0, 255, 0, 0.1f);
                 var red = new Color(255, 0, 0, 0.1f);
                 var cellColor = Color.Lerp(green, red, cell.IntegrationCost * 0.00004f);
 
                 Handles.color = Color.white;
                 Handles.DrawSolidRectangleWithOutline(cellRect, cellColor, cellColor);
+                
                 if (cell.DirectionVector.HasValue) {
                     Handles.color = Color.cyan;
                     Handles.ArrowHandleCap(
@@ -132,8 +121,6 @@ namespace FlowField {
                         EventType.Repaint
                     );
                 }
-                Handles.Label(terrainCostPosition, $"{cell.TerrainCost}", textStyle);
-                Handles.Label(integrationCostPosition, $"{(cell.IntegrationCost == int.MaxValue ? "∞" : cell.IntegrationCost.ToString())}", textStyle);
             }
         }
 
