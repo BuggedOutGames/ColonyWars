@@ -18,7 +18,7 @@ namespace FlowField {
                     case EventType.MouseDown:
                         if (Event.current.button == 1) {
                             Vector2 worldPosition = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition).origin;
-                            flowField.CalculateIntegrationCostField(worldPosition);
+                            flowField.CalculateFlowField(worldPosition);
                             Event.current.Use();
                         }
                         break;

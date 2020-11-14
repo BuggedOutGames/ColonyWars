@@ -1,11 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
 namespace FlowField {
     [ExecuteInEditMode]
-    public class FlowField : MonoBehaviour, IEnumerable {
+    public class FlowField : MonoBehaviour {
 
         public float CellSize;
         public Vector2Int Dimensions;
@@ -25,6 +25,14 @@ namespace FlowField {
                 DisplayFlowField();
             }
         }
+        
+        public void CalculateFlowField(Vector2 worldPosition) {
+            if (grid == null) {
+                grid = new Grid(Dimensions, CellSize);
+            }
+            CalculateIntegrationCostField(worldPosition);
+            CalculateFlowField();
+        }
 
         private void CalculateTerrainCostField() {
             foreach (Grid.GridCell cell in grid) {
@@ -41,7 +49,7 @@ namespace FlowField {
             }
         }
 
-        public void CalculateIntegrationCostField(Vector2 worldPosition) {
+        private void CalculateIntegrationCostField(Vector2 worldPosition) {
             var goalCell = GetGridCellAtWorldPosition(worldPosition);
             if (goalCell != null && goalCell.TerrainCost != 255) {
                 goalCell.IntegrationCost = 0;
@@ -50,7 +58,6 @@ namespace FlowField {
                         cell.IntegrationCost = int.MaxValue;
                     }
                 }
-                
                 var frontierCells = new Queue<Grid.GridCell>();
                 frontierCells.Enqueue(goalCell);
                 while (frontierCells.Count > 0) {
@@ -58,7 +65,8 @@ namespace FlowField {
                     var neighborCells = grid.GetNeighborCells(currentCell.GridIndex);
                     foreach (var neighborCell in neighborCells) {
                         if (neighborCell.TerrainCost != 255) {
-                            var newIntegrationCost = currentCell.IntegrationCost + neighborCell.TerrainCost;
+                            var directionCost = neighborCell.GridIndex.x != currentCell.GridIndex.x && neighborCell.GridIndex.y != currentCell.GridIndex.y ? 14 : 10;
+                            var newIntegrationCost = currentCell.IntegrationCost + neighborCell.TerrainCost + directionCost;
                             if (newIntegrationCost < neighborCell.IntegrationCost) {
                                 neighborCell.IntegrationCost = newIntegrationCost;
                                 if (!frontierCells.Contains(neighborCell)) {
@@ -71,9 +79,29 @@ namespace FlowField {
             }
         }
 
+        private void CalculateFlowField() {
+            foreach (Grid.GridCell cell in grid) {
+                if (cell.IntegrationCost == 0 || cell.IntegrationCost == int.MaxValue) {
+                    cell.DirectionVector = null;
+                } else {
+                    var shortestPath = grid
+                        .GetNeighborCells(cell.GridIndex)
+                        .Aggregate((shortestPathCell, nextNeighbor) => {
+                            if (shortestPathCell == null) {
+                                return nextNeighbor;
+                            } else {
+                                return shortestPathCell.IntegrationCost < nextNeighbor.IntegrationCost
+                                    ? shortestPathCell
+                                    : nextNeighbor;
+                            }
+                        });
+                    cell.DirectionVector = (shortestPath.WorldPosition - cell.WorldPosition).normalized;
+                } 
+            }
+        }
+
         private void DisplayFlowField() {
             foreach (Grid.GridCell cell in grid) {
-                var wireCubePosition = new Vector3(cell.WorldPosition.x, cell.WorldPosition.y, -1);
                 var cellRect = new Rect(
                 new Vector2(cell.WorldPosition.x - grid.CellSize / 2, cell.WorldPosition.y - grid.CellSize / 2), 
                 new Vector2(grid.CellSize, grid.CellSize)
@@ -92,21 +120,25 @@ namespace FlowField {
                 };
                 var green = new Color(0, 255, 0, 0.1f);
                 var red = new Color(255, 0, 0, 0.1f);
-                var cellColor = Color.Lerp(green, red, cell.IntegrationCost * 0.0002f);
+                var cellColor = Color.Lerp(green, red, cell.IntegrationCost * 0.00004f);
 
+                Handles.color = Color.white;
                 Handles.DrawSolidRectangleWithOutline(cellRect, cellColor, cellColor);
-                Handles.DrawWireCube(wireCubePosition, new Vector3(grid.CellSize, grid.CellSize, 0));
+                if (cell.DirectionVector.HasValue) {
+                    Handles.color = Color.cyan;
+                    Handles.ArrowHandleCap(
+                        0, cell.WorldPosition, 
+                        Quaternion.LookRotation(cell.DirectionVector.Value), grid.CellSize / 3, 
+                        EventType.Repaint
+                    );
+                }
                 Handles.Label(terrainCostPosition, $"{cell.TerrainCost}", textStyle);
                 Handles.Label(integrationCostPosition, $"{(cell.IntegrationCost == int.MaxValue ? "∞" : cell.IntegrationCost.ToString())}", textStyle);
             }
         }
 
-        public Grid.GridCell GetGridCellAtWorldPosition(Vector2 worldPosition) {
+        private Grid.GridCell GetGridCellAtWorldPosition(Vector2 worldPosition) {
             return grid.GetCellAtWorldPosition(worldPosition);
-        }
-
-        public IEnumerator GetEnumerator() {
-            return grid.GetEnumerator();
         }
     }
 }

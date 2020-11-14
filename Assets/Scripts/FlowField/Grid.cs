@@ -8,7 +8,7 @@ namespace FlowField {
         public class GridCell {
             public int TerrainCost;
             public int IntegrationCost;
-            public Vector2 DirectionVector;
+            public Vector2? DirectionVector;
             public readonly Vector2Int GridIndex;
             public readonly Vector2 WorldPosition;
             public GridCell(Vector2Int gridIndex, Vector2 worldPosition) {
@@ -66,12 +66,20 @@ namespace FlowField {
             var neighborCells = new List<GridCell>();
             if (originCell != null) {
                 var northCell = GetCellAtIndex(new Vector2Int(cellIndex.x, cellIndex.y - 1));
+                var northEastCell = GetCellAtIndex(new Vector2Int(cellIndex.x + 1, cellIndex.y - 1));
+                var northWestCell = GetCellAtIndex(new Vector2Int(cellIndex.x - 1, cellIndex.y - 1));
                 var southCell = GetCellAtIndex(new Vector2Int(cellIndex.x, cellIndex.y + 1));
+                var southEastCell = GetCellAtIndex(new Vector2Int(cellIndex.x + 1, cellIndex.y + 1));
+                var southWestCell = GetCellAtIndex(new Vector2Int(cellIndex.x - 1, cellIndex.y + 1));
                 var eastCell = GetCellAtIndex(new Vector2Int(cellIndex.x + 1, cellIndex.y));
                 var westCell = GetCellAtIndex(new Vector2Int(cellIndex.x - 1, cellIndex.y));
                 
                 if (northCell != null) neighborCells.Add(northCell);
+                if (northEastCell != null) neighborCells.Add(northEastCell);
+                if (northWestCell != null) neighborCells.Add(northWestCell);
                 if (southCell != null) neighborCells.Add(southCell);
+                if (southEastCell != null) neighborCells.Add(southEastCell);
+                if (southWestCell != null) neighborCells.Add(southWestCell);
                 if (eastCell != null) neighborCells.Add(eastCell);
                 if (westCell != null) neighborCells.Add(westCell);
             }
