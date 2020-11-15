@@ -21,7 +21,7 @@ public class MovementBehaviour : MonoBehaviour {
     
     private Rigidbody2D rigidBody;
     private Animator animator;
-    private Vector2? moveDestination;
+    private FlowField flowField;
     
     private Vector2 separationSmoothVector;
     private Vector2 alignmentSmoothVector;
@@ -44,8 +44,8 @@ public class MovementBehaviour : MonoBehaviour {
         adjustedSeparationFactor = separationFactor * 100;
         adjustedAlignmentFactor = alignmentFactor * 100;
         adjustedCohesionFactor = cohesionFactor * 100;
-        adjustedDestinationFactor = destinationFactor * 2;
-        adjustedObstacleAvoidanceFactor = obstacleAvoidanceFactor * 10;
+        adjustedDestinationFactor = destinationFactor * 50;
+        adjustedObstacleAvoidanceFactor = obstacleAvoidanceFactor * 20;
         rigidBody = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         EventManager.Instance.MoveCommandEvent += HandleMoveCommandEvent;
@@ -76,15 +76,15 @@ public class MovementBehaviour : MonoBehaviour {
     }
     
     private void FixedUpdate() {
-        // if (moveDestination.HasValue) {
-            Vector2 direction = Cohesion() + Alignment() + Separation() + Destination() + ObstacleAvoidance();
+        if (flowField != null) {
+            var direction = Cohesion() + Alignment() + Separation() + Destination() + ObstacleAvoidance();;
             RotateTowards(direction);
             MoveForward();
-            // if (Vector2.Distance(transform.position, moveDestination.Value) < 1) {
-            //     moveDestination = null;
-            //     StopWalkAnimation();
-            // }
-        // }
+            if (flowField.GetFlowDirection(transform.position) == Vector2.zero) {
+                flowField = null;
+                StopWalkAnimation();
+            }
+        }
     }
     
     private Vector2 Cohesion() {
@@ -108,13 +108,8 @@ public class MovementBehaviour : MonoBehaviour {
     }
 
     private Vector2 Destination() {
-        if (!moveDestination.HasValue) {
-            return transform.up;
-        } else {
-            Vector2 destinationSteer = moveDestination.Value - (Vector2) transform.position;
-            Vector2 adjustedDestinationSteer = destinationSteer * adjustedDestinationFactor;
-            return SmoothedSteer(adjustedDestinationSteer, ref destinationSmoothVector);
-        }
+        Vector2 destinationSteer = (Vector2) transform.position + flowField.GetFlowDirection(transform.position) * adjustedDestinationFactor;
+        return SmoothedSteer(destinationSteer, ref destinationSmoothVector);
     }
 
     private Vector2 ObstacleAvoidance() {
@@ -168,7 +163,7 @@ public class MovementBehaviour : MonoBehaviour {
 
     private void HandleMoveCommandEvent(object sender, MoveCommand moveCommand) {
         if (moveCommand.Unit.gameObject.Equals(gameObject)) {
-            moveDestination = moveCommand.Destination;
+            flowField = FlowFieldManager.Instance.GetFlowField(moveCommand.Destination);
             StartWalkAnimation();
         }
     }

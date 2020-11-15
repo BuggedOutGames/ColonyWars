@@ -9,7 +9,7 @@ public class SelectionBehaviour : MonoBehaviour {
     private float mouseDownStart;
     private Vector2 mousePositionStart;
     
-    void Start() {
+    private void Start() {
         EventManager.Instance.UnitEnteredVisionEvent += HandleUnitEnteredVisionEvent;
         EventManager.Instance.UnitExitedVisionEvent += HandleUnitExitedVisionEvent;
     }
@@ -17,7 +17,7 @@ public class SelectionBehaviour : MonoBehaviour {
     private void HandleUnitEnteredVisionEvent(object sender, UnitBehaviour unit) => visibleUnits.Add(unit);
     private void HandleUnitExitedVisionEvent(object sender, UnitBehaviour unit) => visibleUnits.Remove(unit);
 
-    void Update() {
+    private void Update() {
         if (Input.GetMouseButtonDown(0)) {
             mouseDownStart = Time.time;
             mousePositionStart = Input.mousePosition;
@@ -32,7 +32,6 @@ public class SelectionBehaviour : MonoBehaviour {
             EventManager.Instance.OnStopMouseSelectionBoxEvent();
         } else if (Input.GetMouseButtonDown(1)) {
             selection.ForEach(selectedUnit => EventManager.Instance.OnMoveCommand(selectedUnit, Utils.Instance.GetMousePositionInWorld()));
-
         }
     }
 

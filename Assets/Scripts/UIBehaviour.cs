@@ -29,6 +29,7 @@ public class UIBehaviour : MonoBehaviour {
 
     private void HandleMoveCommandEvent(object sender, MoveCommand moveEvent) {
         DisplayMovementIndicator(moveEvent.Destination);
+        FlowFieldManager.Instance.DisplayFlowField(moveEvent.Destination);
     }
     
     private void DisplayMovementIndicator(Vector2 position) {

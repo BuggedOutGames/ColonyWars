@@ -12,7 +12,7 @@ public class EventManager {
     public event EventHandler<UnitBehaviour> SelectUnitEvent;
     public event EventHandler<UnitBehaviour> DeSelectUnitEvent;
     public event EventHandler<Rect> StartMouseSelectionBoxEvent;
-    public event EventHandler StopMouseSelectionBoxEvent; 
+    public event EventHandler StopMouseSelectionBoxEvent;
 
 
     public void OnMoveCommand(UnitBehaviour unit, Vector2 destination) {
