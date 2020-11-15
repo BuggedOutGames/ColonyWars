@@ -1,7 +1,14 @@
+using Events;
 using UnityEngine;
 
-public class UnitBehaviour : MonoBehaviour {
+namespace Behaviours {
+    public class UnitBehaviour : MonoBehaviour {
+        private void OnBecameInvisible() {
+            EventManager.Instance.OnUnitExitedVision(this);
+        }
 
-    private void OnBecameVisible() => EventManager.Instance.OnUnitEnteredVision(this);
-    private void OnBecameInvisible() => EventManager.Instance.OnUnitExitedVision(this);
+        private void OnBecameVisible() {
+            EventManager.Instance.OnUnitEnteredVision(this);
+        }
+    }
 }

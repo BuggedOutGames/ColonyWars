@@ -1,12 +1,15 @@
 ﻿using System;
+using Behaviours;
 using UnityEngine;
 
-public class MoveCommand : EventArgs {
-    public UnitBehaviour Unit { get; }
-    public Vector2 Destination { get; }
+namespace Events {
+    public class MoveCommand : EventArgs {
+        public MoveCommand(UnitBehaviour unit, Vector2 destination) {
+            Unit = unit;
+            Destination = destination;
+        }
 
-    public MoveCommand(UnitBehaviour unit, Vector2 destination) {
-        Unit = unit;
-        Destination = destination;
+        public UnitBehaviour Unit { get; }
+        public Vector2 Destination { get; }
     }
 }

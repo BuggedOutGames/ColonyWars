@@ -1,12 +1,16 @@
-﻿using UnityEngine;
+﻿using System.Diagnostics.CodeAnalysis;
+using Events;
+using UnityEngine;
 
-public class FlowFieldUI : MonoBehaviour {
-    
-    private void Start() {
-        EventManager.Instance.MoveCommandEvent += HandleMoveCommandEvent;
-    }
+namespace Behaviours.FlowField {
+    public class FlowFieldUI : MonoBehaviour {
+        private void Start() {
+            EventManager.Instance.MoveCommandEvent += HandleMoveCommandEvent;
+        }
 
-    private void HandleMoveCommandEvent(object sender, MoveCommand move) {
-        FlowFieldManager.Instance.DisplayFlowField(move.Destination);
+        [SuppressMessage("ReSharper", "Unity.PerformanceCriticalCodeInvocation")]
+        private static void HandleMoveCommandEvent(object sender, MoveCommand move) {
+            FlowFieldManager.Instance.DisplayFlowField(move.Destination);
+        }
     }
 }

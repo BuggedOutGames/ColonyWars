@@ -1,52 +1,58 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
+using Behaviours;
 using UnityEngine;
 
-public class EventManager {
+namespace Events {
+    public class EventManager {
+        
+        private static EventManager _instance;
+        public static EventManager Instance => _instance ?? (_instance = new EventManager());
 
-    private static EventManager _instance;
-    public static EventManager Instance => _instance ?? (_instance = new EventManager());
-    
-    public event EventHandler<MoveCommand> MoveCommandEvent;
-    public event EventHandler<UnitBehaviour> UnitEnteredVisionEvent;
-    public event EventHandler<UnitBehaviour> UnitExitedVisionEvent;
-    public event EventHandler<UnitBehaviour> SelectUnitEvent;
-    public event EventHandler<UnitBehaviour> DeSelectUnitEvent;
-    public event EventHandler<Rect> StartMouseSelectionBoxEvent;
-    public event EventHandler StopMouseSelectionBoxEvent;
+        public event EventHandler<MoveCommand> MoveCommandEvent;
+        public event EventHandler<UnitBehaviour> UnitEnteredVisionEvent;
+        public event EventHandler<UnitBehaviour> UnitExitedVisionEvent;
+        public event EventHandler<UnitBehaviour> SelectUnitEvent;
+        public event EventHandler<UnitBehaviour> DeSelectUnitEvent;
+        public event EventHandler<Rect> StartMouseSelectionBoxEvent;
+        public event EventHandler StopMouseSelectionBoxEvent;
 
 
-    public void OnMoveCommand(UnitBehaviour unit, Vector2 destination) {
-        EventHandler<MoveCommand> handler = MoveCommandEvent;
-        handler?.Invoke(this, new MoveCommand(unit, destination));
-    }
+        [SuppressMessage("ReSharper", "Unity.PerformanceCriticalCodeInvocation")]
+        public void OnMoveCommand(UnitBehaviour unit, Vector2 destination) {
+            var handler = MoveCommandEvent;
+            handler?.Invoke(this, new MoveCommand(unit, destination));
+        }
 
-    public void OnUnitEnteredVision(UnitBehaviour unit) {
-        EventHandler<UnitBehaviour> handler = UnitEnteredVisionEvent;
-        handler?.Invoke(this, unit);
-    }
+        public void OnUnitEnteredVision(UnitBehaviour unit) {
+            var handler = UnitEnteredVisionEvent;
+            handler?.Invoke(this, unit);
+        }
 
-    public void OnUnitExitedVision(UnitBehaviour unit) {
-        EventHandler<UnitBehaviour> handler = UnitExitedVisionEvent;
-        handler?.Invoke(this, unit);
-    }
+        public void OnUnitExitedVision(UnitBehaviour unit) {
+            var handler = UnitExitedVisionEvent;
+            handler?.Invoke(this, unit);
+        }
 
-    public void OnSelectUnit(UnitBehaviour unit) {
-        EventHandler<UnitBehaviour> handler = SelectUnitEvent;
-        handler?.Invoke(this, unit);
-    }
-    
-    public void OnDeSelectUnit(UnitBehaviour unit) {
-        EventHandler<UnitBehaviour> handler = DeSelectUnitEvent;
-        handler?.Invoke(this, unit);
-    }
+        public void OnSelectUnit(UnitBehaviour unit) {
+            var handler = SelectUnitEvent;
+            handler?.Invoke(this, unit);
+        }
 
-    public void OnStartMouseSelectionBoxEvent(Rect bounds) {
-        EventHandler<Rect> handler = StartMouseSelectionBoxEvent;
-        handler?.Invoke(this, bounds);
-    }
-    
-    public void OnStopMouseSelectionBoxEvent() {
-        EventHandler handler = StopMouseSelectionBoxEvent;
-        handler?.Invoke(this, null);
+        [SuppressMessage("ReSharper", "Unity.PerformanceCriticalCodeInvocation")]
+        public void OnDeSelectUnit(UnitBehaviour unit) {
+            var handler = DeSelectUnitEvent;
+            handler?.Invoke(this, unit);
+        }
+
+        public void OnStartMouseSelectionBoxEvent(Rect bounds) {
+            var handler = StartMouseSelectionBoxEvent;
+            handler?.Invoke(this, bounds);
+        }
+
+        public void OnStopMouseSelectionBoxEvent() {
+            var handler = StopMouseSelectionBoxEvent;
+            handler?.Invoke(this, null);
+        }
     }
 }
