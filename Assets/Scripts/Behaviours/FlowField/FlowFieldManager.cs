@@ -11,7 +11,7 @@ public class FlowFieldManager : MonoBehaviour {
     
     private FlowField visibleFlowField;
     private readonly Dictionary<Vector2Int, FlowField> flowFieldCache = new Dictionary<Vector2Int, FlowField>();
-    
+
     private void Awake() {
         if (Application.isPlaying) {
             if (Instance == null) {
@@ -36,7 +36,6 @@ public class FlowFieldManager : MonoBehaviour {
 
     public void DisplayFlowField(Vector2 worldPosition) {
         visibleFlowField = GetFlowField(worldPosition);
-        
     }
     
     public FlowField GetFlowField(Vector2 worldPosition) {

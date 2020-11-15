@@ -8,8 +8,10 @@ public class SelectionBehaviour : MonoBehaviour {
     private bool isSelecting;
     private float mouseDownStart;
     private Vector2 mousePositionStart;
+    private Camera mainCamera;
     
     private void Start() {
+        mainCamera = Camera.main;
         EventManager.Instance.UnitEnteredVisionEvent += HandleUnitEnteredVisionEvent;
         EventManager.Instance.UnitExitedVisionEvent += HandleUnitExitedVisionEvent;
     }
@@ -24,14 +26,14 @@ public class SelectionBehaviour : MonoBehaviour {
             DeSelectUnits();
             SelectUnitAtMousePosition();
         } else if (Input.GetMouseButton(0) && (Time.time - mouseDownStart > 0.11)) {
-            Rect selectionBoxWorld = Utils.Instance.GetWorldRect(mousePositionStart, Input.mousePosition);
-            Rect selectionBoxScreen = Utils.Instance.GetScreenRect(mousePositionStart, Input.mousePosition);
+            Rect selectionBoxWorld = ProjectionUtil.GetWorldRect(mainCamera, mousePositionStart, Input.mousePosition);
+            Rect selectionBoxScreen = ScreenUtil.GetScreenRect(mousePositionStart, Input.mousePosition);
             SelectUnitsInBounds(selectionBoxWorld);
             EventManager.Instance.OnStartMouseSelectionBoxEvent(selectionBoxScreen);
         } else if (Input.GetMouseButtonUp(0)) {
             EventManager.Instance.OnStopMouseSelectionBoxEvent();
         } else if (Input.GetMouseButtonDown(1)) {
-            selection.ForEach(selectedUnit => EventManager.Instance.OnMoveCommand(selectedUnit, Utils.Instance.GetMousePositionInWorld()));
+            selection.ForEach(selectedUnit => EventManager.Instance.OnMoveCommand(selectedUnit, ProjectionUtil.GetPositionInWorld(mainCamera, Input.mousePosition)));
         }
     }
 
@@ -46,7 +48,7 @@ public class SelectionBehaviour : MonoBehaviour {
     }
 
     private void SelectUnitAtMousePosition() {
-        RaycastHit2D hit = Utils.Instance.CastRayAtMousePosition();
+        RaycastHit2D hit = ProjectionUtil.CastRayFromScreenToWorld(mainCamera, Input.mousePosition);
         if (hit.collider != null) {
             UnitBehaviour unit = hit.transform.gameObject.GetComponent<UnitBehaviour>();
             if (unit != null) {

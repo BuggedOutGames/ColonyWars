@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5699313562704446412}
   - component: {fileID: 26802097}
   m_Layer: 11
-  m_Name: RockLarge (1)
+  m_Name: RockLarge
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -145,7 +145,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6628cdf7dd9c4880b502dd430da1fe5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Cost: 255
+  MovementPenalty: 255
 --- !u!1 &7423061901120462266
 GameObject:
   m_ObjectHideFlags: 0

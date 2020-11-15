@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class Grid: IEnumerable {
-    public class GridCell {
+public class FlowFieldGrid: IEnumerable {
+    public class FlowFieldCell {
         public int TerrainCost;
         public int IntegrationCost;
         public Vector2? DirectionVector;
         public readonly Vector2Int GridIndex;
         public readonly Vector2 WorldPosition;
-        public GridCell(Vector2Int gridIndex, Vector2 worldPosition) {
+        public FlowFieldCell(Vector2Int gridIndex, Vector2 worldPosition) {
             GridIndex = gridIndex;
             WorldPosition = worldPosition;
         }
@@ -18,16 +18,16 @@ public class Grid: IEnumerable {
 
     public readonly float CellSize;
     public readonly Vector2Int Dimensions;
-    private readonly GridCell[,] grid;
+    private readonly FlowFieldCell[,] grid;
 
-    public Grid(Vector2Int dimensions, float cellSize) {
+    public FlowFieldGrid(Vector2Int dimensions, float cellSize) {
         CellSize = cellSize;
         Dimensions = dimensions;
-        grid = new GridCell[dimensions.x, dimensions.y];
+        grid = new FlowFieldCell[dimensions.x, dimensions.y];
         foreach (var x in Enumerable.Range(0, dimensions.x)) {
             foreach (var y in Enumerable.Range(0, dimensions.y)) {
                 var cellIndex = new Vector2Int(x, y);
-                grid[x, y] = new GridCell(cellIndex, GetWorldPosition(cellIndex));
+                grid[x, y] = new FlowFieldCell(cellIndex, GetWorldPosition(cellIndex));
             }
         }
     }
@@ -46,7 +46,7 @@ public class Grid: IEnumerable {
         );
     }
 
-    private GridCell GetCellAtIndex(Vector2Int cellIndex) {
+    private FlowFieldCell GetCellAtIndex(Vector2Int cellIndex) {
         if (cellIndex.x >= 0 && cellIndex.x < Dimensions.x && cellIndex.y >= 0 && cellIndex.y < Dimensions.y) {
             return grid[cellIndex.x, cellIndex.y];
         } else {
@@ -55,14 +55,14 @@ public class Grid: IEnumerable {
 
     }
 
-    public GridCell GetCellAtWorldPosition(Vector2 worldPosition) {
+    public FlowFieldCell GetCellAtWorldPosition(Vector2 worldPosition) {
         var cellIndex = GetCellIndex(worldPosition);
         return GetCellAtIndex(cellIndex);
     }
 
-    public List<GridCell> GetNeighborCells(Vector2Int cellIndex) {
+    public List<FlowFieldCell> GetNeighborCells(Vector2Int cellIndex) {
         var originCell = GetCellAtIndex(cellIndex);
-        var neighborCells = new List<GridCell>();
+        var neighborCells = new List<FlowFieldCell>();
         if (originCell != null) {
             var northCell = GetCellAtIndex(new Vector2Int(cellIndex.x, cellIndex.y - 1));
             var northEastCell = GetCellAtIndex(new Vector2Int(cellIndex.x + 1, cellIndex.y - 1));
@@ -86,6 +86,6 @@ public class Grid: IEnumerable {
     }
     
     public IEnumerator GetEnumerator() {
-        return grid.Cast<GridCell>().GetEnumerator();
+        return grid.Cast<FlowFieldCell>().GetEnumerator();
     }
 }
