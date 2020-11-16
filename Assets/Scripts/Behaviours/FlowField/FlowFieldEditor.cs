@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-namespace Behaviours.FlowField {
+namespace BuggedGames.ColonyWars.PathFinding {
     [CustomEditor(typeof(FlowFieldManager))]
     public class FlowFieldEditor : Editor {
         

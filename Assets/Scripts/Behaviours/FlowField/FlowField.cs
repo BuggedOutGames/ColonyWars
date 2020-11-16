@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Behaviours.Terrain;
 using UnityEditor;
 using UnityEngine;
 
-namespace Behaviours.FlowField {
+using BuggedGames.ColonyWars.Terrain;
+
+namespace BuggedGames.ColonyWars.PathFinding {
     public class FlowField {
         
         private readonly FlowFieldGrid flowFieldGrid;

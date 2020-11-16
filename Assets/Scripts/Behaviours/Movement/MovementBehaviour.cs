@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Behaviours.FlowField;
-using Events;
 using UnityEngine;
 
-namespace Behaviours.Movement {
+using BuggedGames.ColonyWars.Events;
+using BuggedGames.ColonyWars.PathFinding;
+
+namespace BuggedGames.ColonyWars.Movement {
     public class MovementBehaviour : MonoBehaviour {
         
         private static readonly int Walking = Animator.StringToHash("walking");
@@ -34,7 +35,7 @@ namespace Behaviours.Movement {
 
         private Rigidbody2D rigidBody;
         private Animator animator;
-        private FlowField.FlowField flowField;
+        private FlowField flowField;
 
         private float rotationSpeed;
         

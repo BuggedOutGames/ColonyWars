@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Events;
 using UnityEngine;
-using Utils;
 
-namespace Behaviours.Selection {
+using BuggedGames.ColonyWars.Utils;
+using BuggedGames.ColonyWars.Events;
+using BuggedGames.ColonyWars.Units;
+
+namespace BuggedGames.ColonyWars.Selection {
     public class SelectionUI : MonoBehaviour {
         
         private const string SelectionIndicatorTag = "SelectionIndicator";

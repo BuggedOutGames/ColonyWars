@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
-using Utils;
 
-namespace DevTools {
+using BuggedGames.ColonyWars.Utils;
+
+namespace BuggedGames.ColonyWars.DevTools {
     public class SpawnBehaviour : MonoBehaviour {
         
         public GameObject unit;

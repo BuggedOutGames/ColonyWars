@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using Events;
 using UnityEngine;
-using Utils;
 
-namespace Behaviours.Selection {
+using BuggedGames.ColonyWars.Utils;
+using BuggedGames.ColonyWars.Events;
+using BuggedGames.ColonyWars.Units;
+
+namespace BuggedGames.ColonyWars.Selection {
     public class SelectionBehaviour : MonoBehaviour {
         
         private readonly List<UnitBehaviour> selection = new List<UnitBehaviour>();
