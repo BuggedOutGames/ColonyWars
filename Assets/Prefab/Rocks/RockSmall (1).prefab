@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8122471771176856922}
   - component: {fileID: 9145899959572251383}
-  m_Layer: 10
+  m_Layer: 11
   m_Name: RockSmall (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -67,8 +67,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -509619535
-  m_SortingLayer: 2
+  m_SortingLayerID: 982203347
+  m_SortingLayer: 3
   m_SortingOrder: 2
   m_Sprite: {fileID: -3327394054111465296, guid: cd7227f3adbffb840b0ed8f68081c6be,
     type: 3}
