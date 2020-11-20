@@ -2,11 +2,10 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using UnityEngine;
+using BuggedOutGames.ColonyWars.Events;
+using BuggedOutGames.ColonyWars.PathFinding;
 
-using BuggedGames.ColonyWars.Events;
-using BuggedGames.ColonyWars.PathFinding;
-
-namespace BuggedGames.ColonyWars.Movement {
+namespace BuggedOutGames.ColonyWars.Movement {
     public class MovementBehaviour : MonoBehaviour {
         
         private static readonly int Walking = Animator.StringToHash("walking");

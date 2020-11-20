@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
+using BuggedOutGames.ColonyWars.Units;
 
-using BuggedGames.ColonyWars.Units;
-
-namespace BuggedGames.ColonyWars.Events {
+namespace BuggedOutGames.ColonyWars.Events {
     public class EventManager {
         
         private static EventManager _instance;

@@ -3,10 +3,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using BuggedOutGames.ColonyWars.Terrain;
 
-using BuggedGames.ColonyWars.Terrain;
-
-namespace BuggedGames.ColonyWars.PathFinding {
+namespace BuggedOutGames.ColonyWars.PathFinding {
     public class FlowField {
         
         private readonly FlowFieldGrid flowFieldGrid;

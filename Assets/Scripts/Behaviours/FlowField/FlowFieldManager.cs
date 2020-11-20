@@ -2,7 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 
-namespace BuggedGames.ColonyWars.PathFinding {
+namespace BuggedOutGames.ColonyWars.PathFinding {
     [ExecuteAlways]
     public class FlowFieldManager : MonoBehaviour {
         

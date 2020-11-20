@@ -1,8 +1,7 @@
 using UnityEngine;
+using BuggedOutGames.ColonyWars.Events;
 
-using BuggedGames.ColonyWars.Events;
-
-namespace BuggedGames.ColonyWars.Units {
+namespace BuggedOutGames.ColonyWars.Units {
     public class UnitBehaviour : MonoBehaviour {
         private void OnBecameInvisible() {
             EventManager.Instance.OnUnitExitedVision(this);

@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
+using BuggedOutGames.ColonyWars.Events;
 
-using BuggedGames.ColonyWars.Events;
-
-namespace BuggedGames.ColonyWars.Movement {
+namespace BuggedOutGames.ColonyWars.Movement {
     public class MovementUI : MonoBehaviour {
         
         public GameObject movementIndicator;

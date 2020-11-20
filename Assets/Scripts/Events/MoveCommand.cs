@@ -1,9 +1,8 @@
 ﻿using System;
 using UnityEngine;
+using BuggedOutGames.ColonyWars.Units;
 
-using BuggedGames.ColonyWars.Units;
-
-namespace BuggedGames.ColonyWars.Events {
+namespace BuggedOutGames.ColonyWars.Events {
     public class MoveCommand : EventArgs {
         public MoveCommand(UnitBehaviour unit, Vector2 destination) {
             Unit = unit;

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace BuggedGames.ColonyWars.Utils {
+namespace BuggedOutGames.ColonyWars.Utils {
     public static class ProjectionUtil {
         public static RaycastHit2D CastRayFromScreenToWorld(Camera camera, Vector2 screenPosition) {
             var worldPosition = camera.ScreenToWorldPoint(screenPosition);

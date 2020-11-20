@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace BuggedGames.ColonyWars.PathFinding {
+namespace BuggedOutGames.ColonyWars.PathFinding {
     public class FlowFieldGrid : IEnumerable {
         
         public readonly float CellSize;
