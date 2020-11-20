@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace BuggedGames.ColonyWars.Utils {
+namespace BuggedOutGames.ColonyWars.Utils {
     public static class GraphicsUtil {
         public static void DrawRect(Rect rect, Color color) {
             GUI.color = color;

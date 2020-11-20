@@ -1,9 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
+using BuggedOutGames.ColonyWars.Events;
 
-using BuggedGames.ColonyWars.Events;
-
-namespace BuggedGames.ColonyWars.PathFinding {
+namespace BuggedOutGames.ColonyWars.PathFinding {
     public class FlowFieldUI : MonoBehaviour {
         private void Start() {
             EventManager.Instance.MoveCommandEvent += HandleMoveCommandEvent;

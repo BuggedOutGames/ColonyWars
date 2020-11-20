@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace BuggedGames.ColonyWars.Utils {
+namespace BuggedOutGames.ColonyWars.Utils {
     public static class ScreenUtil {
         public static Rect GetScreenRect(Vector2 screenPositionOne, Vector2 screenPositionTwo) {
             // Screen space has origin at bottom left, whereas Rect has origin in top left
