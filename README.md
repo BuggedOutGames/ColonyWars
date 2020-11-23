@@ -8,4 +8,4 @@ Check out the Game Design Document on Nuclino for more detailed information - ht
 
 <br/>
 
-![Colony Wars](Docs/ColonyWars.PNG)
+![Colony Wars](Docs/ColonyWars.png)
